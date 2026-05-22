@@ -61,6 +61,13 @@ mayank-fashion/
                        # admin/ subfolder for the admin dashboard
 ```
 
+## 🚀 Quick Deploy
+
+See **[DEPLOY.md](./DEPLOY.md)** for three options:
+- **Option A** — Run on your computer with one Docker command (no Node/MongoDB install)
+- **Option B** — Deploy free to Vercel + Render + MongoDB Atlas (public live URL)
+- **Option C** — Local dev with Node + MongoDB
+
 ## Getting Started
 
 ### Prerequisites
