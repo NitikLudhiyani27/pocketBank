@@ -4,11 +4,11 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Truck, ShieldCheck, RefreshCw } from 'lucide-react';
 import api from '../api/client';
 import ProductCard from '../components/ProductCard';
-
-const heroImages = [
-  'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1200',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200',
-];
+import HeroSlider from '../components/HeroSlider';
+import FlashSale from '../components/FlashSale';
+import Testimonials from '../components/Testimonials';
+import InstagramGallery from '../components/InstagramGallery';
+import RecentlyViewed from '../components/RecentlyViewed';
 
 const categoryShowcase = [
   { name: 'Kurti', img: 'https://picsum.photos/seed/kurti/600/700' },
@@ -16,70 +16,25 @@ const categoryShowcase = [
   { name: 'Sarees', img: 'https://picsum.photos/seed/saree/600/700' },
   { name: 'Party Wear', img: 'https://picsum.photos/seed/party/600/700' },
   { name: 'Co-ord Sets', img: 'https://picsum.photos/seed/coord/600/700' },
-  { name: 'Footwear', img: 'https://picsum.photos/seed/foot/600/700' },
+  { name: 'Palazzo Sets', img: 'https://picsum.photos/seed/palazzo/600/700' },
 ];
 
 export default function Home() {
   const [trending, setTrending] = useState([]);
   const [featured, setFeatured] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
 
   useEffect(() => {
     api.get('/products?trending=true&limit=8').then(({ data }) => setTrending(data.items || []));
     api.get('/products?featured=true&limit=8').then(({ data }) => setFeatured(data.items || []));
+    api.get('/products?sort=newest&limit=8').then(({ data }) => setNewArrivals(data.items || []));
+    api.get('/products?sort=popular&limit=8').then(({ data }) => setBestSellers(data.items || []));
   }, []);
 
   return (
     <div className="animate-fade-in">
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="container-x grid lg:grid-cols-2 gap-10 items-center py-16 lg:py-24">
-          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
-            <div className="inline-flex items-center gap-2 bg-brand-50 dark:bg-ink-800 text-brand-600 px-4 py-1.5 rounded-full text-sm font-medium mb-5">
-              <Sparkles size={14} /> New Summer Collection 2026
-            </div>
-            <h1 className="heading-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Wear Your <span className="bg-gradient-to-r from-brand-500 to-brand-700 bg-clip-text text-transparent">Confidence</span>
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mt-5 max-w-md">
-              Premium fashion for the modern Indian woman. Explore curated styles
-              from ethnic elegance to western chic.
-            </p>
-            <div className="flex flex-wrap gap-3 mt-7">
-              <Link to="/shop" className="btn-primary">Shop Now <ArrowRight size={16} /></Link>
-              <Link to="/shop/Ethnic Wear" className="btn-outline">Explore Ethnic</Link>
-            </div>
-            <div className="grid grid-cols-3 gap-4 mt-10 max-w-md">
-              {[
-                { v: '500+', l: 'Styles' },
-                { v: '50K+', l: 'Happy Customers' },
-                { v: '4.8★', l: 'Avg Rating' },
-              ].map((s) => (
-                <div key={s.l}>
-                  <div className="heading-display text-2xl font-bold text-brand-600">{s.v}</div>
-                  <div className="text-xs text-gray-500">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7 }} className="relative">
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-glow">
-              <img src={heroImages[0]} alt="hero" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/30 to-transparent" />
-            </div>
-            <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4 }}
-              className="absolute -bottom-6 -left-6 card p-4 hidden sm:block">
-              <div className="flex items-center gap-3">
-                <div className="bg-brand-100 dark:bg-ink-700 p-2 rounded-xl"><Sparkles size={18} className="text-brand-600" /></div>
-                <div>
-                  <div className="text-xs text-gray-500">Use code</div>
-                  <div className="font-bold text-brand-600">WELCOME10</div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+      <HeroSlider />
 
       {/* PERKS */}
       <section className="container-x grid grid-cols-2 md:grid-cols-4 gap-4 py-8">
@@ -142,6 +97,23 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FLASH SALE with countdown */}
+      <FlashSale />
+
+      {/* NEW ARRIVALS */}
+      <section className="container-x py-14">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="heading-display text-3xl font-bold">New Arrivals</h2>
+            <p className="text-gray-500 mt-1">Fresh styles, just dropped</p>
+          </div>
+          <Link to="/shop?sort=newest" className="text-brand-600 text-sm font-medium hover:underline">View all →</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {newArrivals.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
+        </div>
+      </section>
+
       {/* OFFER BANNER */}
       <section className="container-x py-10">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-600 via-brand-500 to-brand-700 p-10 lg:p-16 text-white">
@@ -158,6 +130,20 @@ export default function Home() {
         </div>
       </section>
 
+      {/* BEST SELLERS */}
+      <section className="container-x py-14">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <h2 className="heading-display text-3xl font-bold">Best Sellers</h2>
+            <p className="text-gray-500 mt-1">Customer favourites</p>
+          </div>
+          <Link to="/shop?sort=popular" className="text-brand-600 text-sm font-medium hover:underline">View all →</Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {bestSellers.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
+        </div>
+      </section>
+
       {/* FEATURED */}
       <section className="container-x py-14">
         <div className="flex items-end justify-between mb-8">
@@ -171,6 +157,15 @@ export default function Home() {
           {featured.map((p, i) => <ProductCard key={p._id} product={p} index={i} />)}
         </div>
       </section>
+
+      {/* RECENTLY VIEWED (renders only if there's history) */}
+      <RecentlyViewed />
+
+      {/* TESTIMONIALS */}
+      <Testimonials />
+
+      {/* INSTAGRAM GALLERY */}
+      <InstagramGallery />
     </div>
   );
 }
