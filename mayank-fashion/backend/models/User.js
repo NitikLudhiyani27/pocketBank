@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema(
     phone: String,
     addresses: [addressSchema],
     avatar: String,
+    resetToken: { type: String, select: false },
+    resetTokenExpires: { type: Date, select: false },
+    newsletter: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

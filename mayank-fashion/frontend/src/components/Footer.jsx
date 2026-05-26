@@ -1,7 +1,26 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Twitter, Mail } from 'lucide-react';
+import toast from 'react-hot-toast';
+import api from '../api/client';
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const subscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/newsletter', { email });
+      toast.success(data.message || "You're subscribed!");
+      setEmail('');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not subscribe');
+    } finally { setLoading(false); }
+  };
+
   return (
     <footer className="mt-20 bg-gradient-to-br from-brand-50 to-white dark:from-ink-800 dark:to-ink-900 border-t border-gray-100 dark:border-ink-700">
       <div className="container-x py-14 grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -37,8 +56,10 @@ export default function Footer() {
           <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <li><Link className="hover:text-brand-600" to="/contact">Contact Us</Link></li>
             <li><Link className="hover:text-brand-600" to="/about">About</Link></li>
-            <li><a className="hover:text-brand-600" href="#">Shipping & Returns</a></li>
-            <li><a className="hover:text-brand-600" href="#">Size Guide</a></li>
+            <li><Link className="hover:text-brand-600" to="/faq">FAQ</Link></li>
+            <li><Link className="hover:text-brand-600" to="/returns">Shipping & Returns</Link></li>
+            <li><Link className="hover:text-brand-600" to="/privacy">Privacy Policy</Link></li>
+            <li><Link className="hover:text-brand-600" to="/terms">Terms & Conditions</Link></li>
           </ul>
         </div>
 
@@ -47,9 +68,18 @@ export default function Footer() {
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
             Get 10% off your first order with code <b className="text-brand-600">WELCOME10</b>
           </p>
-          <form className="flex gap-2">
-            <input className="input" placeholder="Your email" />
-            <button className="btn-primary !px-4 !py-2 text-sm">Subscribe</button>
+          <form onSubmit={subscribe} className="flex gap-2">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input"
+              placeholder="Your email"
+            />
+            <button disabled={loading} className="btn-primary !px-4 !py-2 text-sm">
+              {loading ? '...' : 'Subscribe'}
+            </button>
           </form>
         </div>
       </div>

@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import api from '../api/client';
 import ProductCard from '../components/ProductCard';
+import PincodeChecker from '../components/PincodeChecker';
+import RecentlyViewed from '../components/RecentlyViewed';
+import useRecentlyViewed from '../hooks/useRecentlyViewed';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +25,7 @@ export default function Product() {
   const { add } = useCart();
   const { has, toggle } = useWishlist();
   const { user } = useAuth();
+  const { push: pushRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
     setLoading(true);
@@ -30,6 +34,8 @@ export default function Product() {
       setData(data);
       setSize(data.product.sizes?.[0] || '');
       setColor(data.product.colors?.[0] || '');
+      // Track view in localStorage so the Recently Viewed rail can render it.
+      if (data.product?._id) pushRecentlyViewed(data.product._id);
     }).finally(() => setLoading(false));
 
     api.get(`/products/${id}/recommendations`).then(({ data }) => setRecommendations(data.items || []));
@@ -174,6 +180,8 @@ export default function Product() {
             ))}
           </div>
 
+          <PincodeChecker />
+
           <div className="mt-8 prose prose-sm dark:prose-invert">
             <h3 className="font-semibold mb-2">Description</h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">{product.description}</p>
@@ -223,6 +231,9 @@ export default function Product() {
           </div>
         </section>
       )}
+
+      {/* RECENTLY VIEWED — exclude current product */}
+      <RecentlyViewed excludeId={product._id} />
     </div>
   );
 }

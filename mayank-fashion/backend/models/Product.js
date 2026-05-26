@@ -3,9 +3,9 @@ const slugify = require('slugify');
 
 const CATEGORIES = [
   'T-Shirts', 'Tops', 'Jeans', 'Pants', 'Kurti', 'Maxi Dresses',
-  'Co-ord Sets', 'Ethnic Wear', 'Hoodies', 'Jackets', 'Skirts',
-  'Sarees', 'Western Dresses', 'Party Wear', 'Casual Wear',
-  'Footwear', 'Accessories',
+  'Palazzo Sets', 'Co-ord Sets', 'Night Suits', 'Ethnic Wear',
+  'Hoodies', 'Jackets', 'Skirts', 'Sarees', 'Western Dresses',
+  'Party Wear', 'Casual Wear', 'Footwear', 'Accessories',
 ];
 
 const productSchema = new mongoose.Schema(

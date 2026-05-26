@@ -46,3 +46,12 @@ body {
 /* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
+
+/* Invoice print styles — hide nav/footer/buttons, print on white. */
+@media print {
+  header, footer { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  .card { box-shadow: none !important; border: 1px solid #eee; }
+  .btn-primary, .btn-outline, .btn-ghost { display: none !important; }
+  a { color: #000 !important; text-decoration: none; }
+}
