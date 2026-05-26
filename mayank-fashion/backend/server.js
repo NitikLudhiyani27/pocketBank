@@ -16,7 +16,28 @@ connectDB();
 
 // Security & middleware
 app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
+
+// CORS — supports multiple origins (comma-separated in CLIENT_URL) so Vercel
+// preview deploys keep working alongside the production URL.
+const allowedOrigins = (process.env.CLIENT_URL || '*')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // Allow non-browser tools (curl, server-to-server) where origin is undefined.
+      if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+        return cb(null, true);
+      }
+      // Allow any *.vercel.app preview by default (safe — only your project gets that subdomain).
+      if (/\.vercel\.app$/.test(new URL(origin).hostname)) return cb(null, true);
+      cb(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));

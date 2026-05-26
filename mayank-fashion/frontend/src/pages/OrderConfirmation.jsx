@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { CheckCircle2, Package, Truck, Home as HomeIcon } from 'lucide-react';
+import { CheckCircle2, Package, Truck, Home as HomeIcon, Printer } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../api/client';
 
@@ -92,7 +92,11 @@ export default function OrderConfirmation() {
         </div>
       </div>
 
-      <div className="text-center mt-8">
+      <div className="text-center mt-8 flex flex-wrap items-center justify-center gap-3 print:hidden">
+        <button onClick={() => window.print()} className="btn-outline">
+          <Printer size={16} /> Print Invoice
+        </button>
+        <Link to="/orders" className="btn-outline">View All Orders</Link>
         <Link to="/shop" className="btn-primary">Continue Shopping</Link>
       </div>
     </div>

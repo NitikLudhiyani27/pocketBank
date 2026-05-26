@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Heart, Search, User, Sun, Moon, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '../api/client';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -24,16 +25,52 @@ export default function Navbar() {
   const { wishlist } = useWishlist();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggest, setShowSuggest] = useState(false);
   const [menu, setMenu] = useState(false);
+  const searchBoxRef = useRef(null);
   const nav = useNavigate();
+
+  // Debounced live search suggestions
+  useEffect(() => {
+    if (!search.trim() || search.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    const t = setTimeout(() => {
+      api.get(`/products?q=${encodeURIComponent(search.trim())}&limit=6`)
+        .then(({ data }) => setSuggestions(data.items || []))
+        .catch(() => setSuggestions([]));
+    }, 200);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const onClick = (e) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setShowSuggest(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
 
   const onSearch = (e) => {
     e.preventDefault();
     if (search.trim()) {
       nav(`/shop?q=${encodeURIComponent(search.trim())}`);
       setSearch('');
+      setShowSuggest(false);
       setOpen(false);
     }
+  };
+
+  const goToSuggestion = (p) => {
+    nav(`/product/${p._id}`);
+    setSearch('');
+    setShowSuggest(false);
+    setOpen(false);
   };
 
   return (
@@ -61,14 +98,46 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <form onSubmit={onSearch} className="ml-auto hidden md:flex items-center relative w-72">
+        <form ref={searchBoxRef} onSubmit={onSearch} className="ml-auto hidden md:flex items-center relative w-72">
           <Search size={16} className="absolute left-3 text-gray-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setShowSuggest(true)}
             placeholder="Search dresses, sarees, kurtis..."
             className="input pl-9"
           />
+          <AnimatePresence>
+            {showSuggest && suggestions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="absolute top-full left-0 right-0 mt-2 card border border-gray-100 dark:border-ink-700 max-h-96 overflow-y-auto z-50"
+              >
+                {suggestions.map((p) => (
+                  <button
+                    key={p._id}
+                    type="button"
+                    onClick={() => goToSuggestion(p)}
+                    className="w-full flex items-center gap-3 p-2 hover:bg-brand-50 dark:hover:bg-ink-700 text-left"
+                  >
+                    <img src={p.images?.[0]} alt="" className="w-10 h-12 object-cover rounded" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm line-clamp-1">{p.name}</div>
+                      <div className="text-xs text-gray-500">{p.category} · ₹{p.price}</div>
+                    </div>
+                  </button>
+                ))}
+                <button
+                  type="submit"
+                  className="w-full p-2 text-sm text-brand-600 font-medium hover:bg-brand-50 dark:hover:bg-ink-700 border-t border-gray-100 dark:border-ink-700"
+                >
+                  See all results for "{search.trim()}" →
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </form>
 
         <div className="ml-auto md:ml-2 flex items-center gap-1">

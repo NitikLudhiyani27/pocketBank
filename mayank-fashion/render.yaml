@@ -1,0 +1,50 @@
+# Render Blueprint — one-click deploy of the Mayank Fashion backend.
+# To use: in Render, click "New + → Blueprint" and point it at this repo.
+# Render reads this file and pre-fills the service config; you only need
+# to fill the secrets (MONGO_URI, JWT_SECRET, etc.) in the UI.
+
+services:
+  - type: web
+    name: mayank-fashion-api
+    runtime: node
+    plan: free
+    region: singapore       # closest free region to India; change if you prefer
+    rootDir: mayank-fashion/backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true        # redeploy on every push to main
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true # Render generates a strong random secret automatically
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ADMIN_EMAIL
+        value: admin@mayankfashion.com
+      - key: ADMIN_PASSWORD
+        value: admin123     # change this from the Render UI after first deploy
+
+      # --- Fill these in the Render dashboard (don't commit secrets) ---
+      - key: MONGO_URI
+        sync: false         # prompts you to enter it during blueprint setup
+      - key: CLIENT_URL
+        sync: false         # set to your Vercel URL after frontend deploy
+
+      # Optional — leave blank to use mock payment / skip emails
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

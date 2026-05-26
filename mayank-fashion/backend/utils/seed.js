@@ -29,6 +29,12 @@ const SAMPLE = [
   // Co-ord Sets
   { name: 'Linen Co-ord Lounge Set', category: 'Co-ord Sets', price: 1899, mrp: 3499, sizes: ['S','M','L'], colors: ['Sage','Cream'], featured: true },
   { name: 'Printed Crop Top & Pants Set', category: 'Co-ord Sets', price: 1699, mrp: 3199, sizes: ['S','M'], colors: ['Boho Print'] },
+  // Palazzo Sets
+  { name: 'Embroidered Kurta Palazzo Set', category: 'Palazzo Sets', price: 1799, mrp: 3499, sizes: ['S','M','L','XL'], colors: ['Powder Pink','Mint'], featured: true },
+  { name: 'Block Print Palazzo Set with Dupatta', category: 'Palazzo Sets', price: 2199, mrp: 3999, sizes: ['M','L','XL'], colors: ['Indigo'], trending: true },
+  // Night Suits
+  { name: 'Satin Pajama Night Suit', category: 'Night Suits', price: 999, mrp: 1999, sizes: ['S','M','L','XL'], colors: ['Blush Pink','Black'], trending: true },
+  { name: 'Cotton Printed Night Suit', category: 'Night Suits', price: 799, mrp: 1499, sizes: ['S','M','L'], colors: ['Lavender Floral'] },
   // Ethnic Wear
   { name: 'Banarasi Silk Lehenga Choli', category: 'Ethnic Wear', price: 4999, mrp: 8999, sizes: ['S','M','L'], colors: ['Red Gold'], featured: true },
   { name: 'Sharara Set with Dupatta', category: 'Ethnic Wear', price: 2999, mrp: 5499, sizes: ['M','L','XL'], colors: ['Pista Green'] },
